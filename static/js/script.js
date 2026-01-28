@@ -715,85 +715,6 @@ function logout() {
 }
 
 /* ========================================
-   Demo Mode Functions
-   ======================================== */
-function simulateRecognition() {
-    if (!isAttendanceRunning) {
-        // Allow simulation anyway for demo
-    }
-
-    const names = ['Aditya Verma', 'Kavya Nair', 'Rohan Mehta', 'Ananya Iyer', 'Siddharth Joshi'];
-    const randomName = names[Math.floor(Math.random() * names.length)];
-    const initials = randomName.split(' ').map(n => n[0]).join('');
-    const rollNo = `CSE${String(Math.floor(Math.random() * 100)).padStart(3, '0')}`;
-    const confidence = (95 + Math.random() * 5).toFixed(1);
-
-    // Add to recognition feed
-    const recognitionFeed = document.getElementById('recognitionFeed');
-    if (recognitionFeed) {
-        const item = document.createElement('div');
-        item.className = 'recognition-item success fade-in';
-        item.innerHTML = `
-            <span class="recognition-icon">✓</span>
-            <span class="recognition-text"><strong>${randomName}</strong> recognized (${confidence}%)</span>
-        `;
-        recognitionFeed.insertBefore(item, recognitionFeed.firstChild);
-
-        // Limit items
-        while (recognitionFeed.children.length > 5) {
-            recognitionFeed.removeChild(recognitionFeed.lastChild);
-        }
-    }
-
-    // Add log entry
-    addLogEntry(`${randomName} marked present (${confidence}% confidence)`, 'success');
-
-    // Add to attendance table
-    const tableBody = document.getElementById('attendanceData');
-    if (tableBody) {
-        const now = new Date();
-        const row = document.createElement('tr');
-        row.classList.add('fade-in');
-        row.innerHTML = `
-            <td>
-                <input type="checkbox" class="checkbox-styled">
-            </td>
-            <td>
-                <div class="student-info">
-                    <div class="student-avatar">${initials}</div>
-                    <div>
-                        <div class="student-name">${randomName}</div>
-                    </div>
-                </div>
-            </td>
-            <td class="student-id">${rollNo}</td>
-            <td>${formatDate(now.toISOString().split('T')[0])}</td>
-            <td>${now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</td>
-            <td><span class="confidence-badge">${confidence}%</span></td>
-            <td>
-                <span class="status-badge present">
-                    <span class="badge-dot"></span>
-                    Present
-                </span>
-            </td>
-        `;
-        tableBody.insertBefore(row, tableBody.firstChild);
-
-        // Update count
-        studentsMarkedCount++;
-        updateStudentsMarked(studentsMarkedCount);
-
-        // Hide empty state
-        const emptyState = document.getElementById('emptyState');
-        if (emptyState) {
-            emptyState.classList.remove('visible');
-        }
-    }
-
-    showNotification(`${randomName} recognized!`, 'success');
-}
-
-/* ========================================
    Student Dashboard Functions
    ======================================== */
 function markAllRead() {
@@ -810,4 +731,100 @@ function markAllRead() {
     }
 
     showNotification('All notifications marked as read', 'success');
+}
+
+/* ========================================
+   Monthly Calendar Functions
+   ======================================== */
+let currentCalendarDate = new Date();
+
+// Sample attendance data for calendar (in real app, fetch from server)
+const attendanceData = {
+    '2026-01-24': 'present',
+    '2026-01-25': 'absent',
+    '2026-01-26': 'present',
+    '2026-01-27': 'present',
+    '2026-01-28': 'present',
+    '2026-01-22': 'present',
+    '2026-01-21': 'present',
+    '2026-01-20': 'present',
+    '2026-01-17': 'absent',
+    '2026-01-15': 'present',
+    '2026-01-14': 'present',
+    '2026-01-13': 'present',
+};
+
+// Initialize calendar on page load
+document.addEventListener('DOMContentLoaded', function () {
+    initializeCalendar();
+});
+
+function initializeCalendar() {
+    const calendarContainer = document.getElementById('calendarDays');
+    if (!calendarContainer) return;
+
+    renderCalendar(currentCalendarDate);
+}
+
+function changeMonth(delta) {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta);
+    renderCalendar(currentCalendarDate);
+}
+
+function renderCalendar(date) {
+    const calendarDays = document.getElementById('calendarDays');
+    const monthYearLabel = document.getElementById('calendarMonthYear');
+
+    if (!calendarDays) return;
+
+    const year = date.getFullYear();
+    const month = date.getMonth();
+
+    // Update header
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'];
+    if (monthYearLabel) {
+        monthYearLabel.textContent = `${monthNames[month]} ${year}`;
+    }
+
+    // Calculate days
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const today = new Date();
+
+    // Clear existing days
+    calendarDays.innerHTML = '';
+
+    // Add empty cells for days before the first day of the month
+    for (let i = 0; i < firstDay; i++) {
+        const emptyDay = document.createElement('div');
+        emptyDay.className = 'calendar-day empty';
+        calendarDays.appendChild(emptyDay);
+    }
+
+    // Add days of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dayEl = document.createElement('div');
+        dayEl.className = 'calendar-day';
+        dayEl.textContent = day;
+
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const isToday = today.getFullYear() === year &&
+            today.getMonth() === month &&
+            today.getDate() === day;
+        const isFuture = new Date(year, month, day) > today;
+
+        // Determine day status
+        if (isToday) {
+            dayEl.classList.add('today');
+        } else if (isFuture) {
+            dayEl.classList.add('future');
+        } else if (attendanceData[dateStr]) {
+            dayEl.classList.add(attendanceData[dateStr]);
+        } else {
+            dayEl.classList.add('regular');
+        }
+
+        calendarDays.appendChild(dayEl);
+    }
 }

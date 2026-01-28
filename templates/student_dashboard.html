@@ -366,52 +366,37 @@
                 </div>
             </div>
 
-            <!-- Attendance Calendar Preview (Optional Enhancement) -->
-            <div class="panel-section mt-4 slide-up delay-4">
+            <!-- Monthly Calendar (Compact) -->
+            <div class="panel-section mt-4 slide-up delay-4 monthly-calendar-section">
                 <div class="panel-header">
                     <h3>
                         <span class="panel-header-icon">📅</span>
-                        This Week's Overview
+                        <span id="calendarMonthYear">January 2026</span>
                     </h3>
+                    <div class="calendar-nav">
+                        <button class="btn btn-sm btn-outline" onclick="changeMonth(-1)">‹</button>
+                        <button class="btn btn-sm btn-outline" onclick="changeMonth(1)">›</button>
+                    </div>
                 </div>
                 <div class="panel-body">
-                    <div class="week-overview">
-                        <div class="day-card past present">
-                            <span class="day-name">Mon</span>
-                            <span class="day-date">24</span>
-                            <span class="day-status">✓</span>
+                    <div class="mini-calendar" id="miniCalendar">
+                        <div class="calendar-weekdays">
+                            <span>Su</span>
+                            <span>Mo</span>
+                            <span>Tu</span>
+                            <span>We</span>
+                            <span>Th</span>
+                            <span>Fr</span>
+                            <span>Sa</span>
                         </div>
-                        <div class="day-card past absent">
-                            <span class="day-name">Tue</span>
-                            <span class="day-date">25</span>
-                            <span class="day-status">✗</span>
+                        <div class="calendar-days" id="calendarDays">
+                            <!-- Days populated by JS -->
                         </div>
-                        <div class="day-card past present">
-                            <span class="day-name">Wed</span>
-                            <span class="day-date">26</span>
-                            <span class="day-status">✓</span>
-                        </div>
-                        <div class="day-card past present">
-                            <span class="day-name">Thu</span>
-                            <span class="day-date">27</span>
-                            <span class="day-status">✓</span>
-                        </div>
-                        <div class="day-card today present">
-                            <span class="day-name">Fri</span>
-                            <span class="day-date">28</span>
-                            <span class="day-status">✓</span>
-                            <span class="today-label">Today</span>
-                        </div>
-                        <div class="day-card future">
-                            <span class="day-name">Sat</span>
-                            <span class="day-date">29</span>
-                            <span class="day-status">-</span>
-                        </div>
-                        <div class="day-card future">
-                            <span class="day-name">Sun</span>
-                            <span class="day-date">30</span>
-                            <span class="day-status">-</span>
-                        </div>
+                    </div>
+                    <div class="calendar-legend">
+                        <span class="legend-item"><span class="legend-dot present"></span> Present</span>
+                        <span class="legend-item"><span class="legend-dot absent"></span> Absent</span>
+                        <span class="legend-item"><span class="legend-dot today"></span> Today</span>
                     </div>
                 </div>
             </div>
