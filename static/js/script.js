@@ -379,43 +379,82 @@ function startFaceDetectionSimulation() {
 }
 
 /* ========================================
-   Attendance Data Functions
+   Attendance Data Functions - Two Column Layout
    ======================================== */
 function loadAttendanceData() {
-    const tableBody = document.getElementById('attendanceData');
+    const presentBody = document.getElementById('presentData');
+    const absentBody = document.getElementById('absentData');
 
-    if (!tableBody) return;
+    if (!presentBody && !absentBody) return;
 
-    const sampleData = [
-        { id: 'CSE001', name: 'Rahul Kumar', date: '2026-01-28', time: '09:15 AM', status: 'present', confidence: 98.5 },
-        { id: 'CSE002', name: 'Priya Sharma', date: '2026-01-28', time: '09:18 AM', status: 'present', confidence: 97.2 },
-        { id: 'CSE003', name: 'Amit Singh', date: '2026-01-28', time: '09:22 AM', status: 'present', confidence: 99.1 },
-        { id: 'CSE004', name: 'Sneha Patel', date: '2026-01-28', time: '--:-- --', status: 'absent', confidence: 0 },
-        { id: 'CSE005', name: 'Vikram Reddy', date: '2026-01-28', time: '09:30 AM', status: 'present', confidence: 96.8 },
+    // Sample student data - all students in the class
+    const allStudents = [
+        { id: 'CSE001', name: 'Rahul Kumar' },
+        { id: 'CSE002', name: 'Priya Sharma' },
+        { id: 'CSE003', name: 'Amit Singh' },
+        { id: 'CSE004', name: 'Sneha Patel' },
+        { id: 'CSE005', name: 'Vikram Reddy' },
+        { id: 'CSE006', name: 'Ananya Iyer' },
+        { id: 'CSE007', name: 'Rohan Mehta' },
+        { id: 'CSE008', name: 'Kavya Nair' },
+        { id: 'CSE009', name: 'Siddharth Joshi' },
+        { id: 'CSE010', name: 'Divya Krishnan' },
     ];
 
-    renderAttendanceTable(sampleData);
-    studentsMarkedCount = sampleData.filter(s => s.status === 'present').length;
+    // Initial present students (demo data)
+    const presentStudents = [
+        { id: 'CSE001', name: 'Rahul Kumar', time: '09:15 AM', confidence: 98.5 },
+        { id: 'CSE002', name: 'Priya Sharma', time: '09:18 AM', confidence: 97.2 },
+        { id: 'CSE003', name: 'Amit Singh', time: '09:22 AM', confidence: 99.1 },
+        { id: 'CSE005', name: 'Vikram Reddy', time: '09:30 AM', confidence: 96.8 },
+    ];
+
+    // Absent students are those not in presentStudents
+    const presentIds = presentStudents.map(s => s.id);
+    const absentStudents = allStudents.filter(s => !presentIds.includes(s.id));
+
+    // Store in global for later use
+    window.attendanceData = {
+        present: presentStudents,
+        absent: absentStudents,
+        allStudents: allStudents
+    };
+
+    renderPresentTable(presentStudents);
+    renderAbsentTable(absentStudents);
+
+    studentsMarkedCount = presentStudents.length;
     updateStudentsMarked(studentsMarkedCount);
 }
 
-function renderAttendanceTable(data) {
-    const tableBody = document.getElementById('attendanceData');
+function renderPresentTable(data) {
+    const tableBody = document.getElementById('presentData');
+    const emptyState = document.getElementById('presentEmptyState');
+    const badge = document.getElementById('presentCountBadge');
 
     if (!tableBody) return;
 
-    // Hide empty state
-    const emptyState = document.getElementById('emptyState');
-    if (emptyState && data.length > 0) {
-        emptyState.classList.remove('visible');
+    // Update badge
+    if (badge) {
+        badge.textContent = data.length;
+    }
+
+    // Show/hide empty state
+    if (emptyState) {
+        if (data.length > 0) {
+            emptyState.style.display = 'none';
+        } else {
+            emptyState.style.display = 'block';
+        }
     }
 
     tableBody.innerHTML = '';
 
     data.forEach((student, index) => {
         const row = document.createElement('tr');
-        row.style.animationDelay = `${index * 0.1}s`;
+        row.style.animationDelay = `${index * 0.05}s`;
         row.classList.add('fade-in');
+        row.dataset.studentId = student.id;
 
         const initials = student.name.split(' ').map(n => n[0]).join('');
         const confidenceHtml = student.confidence > 0
@@ -423,9 +462,6 @@ function renderAttendanceTable(data) {
             : '<span class="confidence-badge low">--</span>';
 
         row.innerHTML = `
-            <td>
-                <input type="checkbox" class="checkbox-styled">
-            </td>
             <td>
                 <div class="student-info">
                     <div class="student-avatar">${initials}</div>
@@ -435,19 +471,128 @@ function renderAttendanceTable(data) {
                 </div>
             </td>
             <td class="student-id">${student.id}</td>
-            <td>${formatDate(student.date)}</td>
-            <td>${student.time}</td>
+            <td>${student.time || '--:--'}</td>
             <td>${confidenceHtml}</td>
+        `;
+
+        tableBody.appendChild(row);
+    });
+}
+
+function renderAbsentTable(data) {
+    const tableBody = document.getElementById('absentData');
+    const emptyState = document.getElementById('absentEmptyState');
+    const badge = document.getElementById('absentCountBadge');
+
+    if (!tableBody) return;
+
+    // Update badge
+    if (badge) {
+        badge.textContent = data.length;
+    }
+
+    // Show/hide empty state
+    if (emptyState) {
+        if (data.length > 0) {
+            emptyState.style.display = 'none';
+        } else {
+            emptyState.style.display = 'block';
+        }
+    }
+
+    tableBody.innerHTML = '';
+
+    data.forEach((student, index) => {
+        const row = document.createElement('tr');
+        row.style.animationDelay = `${index * 0.05}s`;
+        row.classList.add('fade-in');
+        row.dataset.studentId = student.id;
+
+        const initials = student.name.split(' ').map(n => n[0]).join('');
+
+        row.innerHTML = `
             <td>
-                <span class="status-badge ${student.status}">
-                    <span class="badge-dot"></span>
-                    ${capitalizeFirst(student.status)}
-                </span>
+                <div class="student-info">
+                    <div class="student-avatar" style="background: linear-gradient(135deg, #fc8181, #f56565);">${initials}</div>
+                    <div>
+                        <div class="student-name">${student.name}</div>
+                    </div>
+                </div>
+            </td>
+            <td class="student-id">${student.id}</td>
+            <td>
+                <button class="btn-mark-present" onclick="markStudentPresent('${student.id}', '${student.name}')">
+                    ✓ Mark Present
+                </button>
             </td>
         `;
 
         tableBody.appendChild(row);
     });
+}
+
+function markStudentPresent(studentId, studentName) {
+    if (!window.attendanceData) return;
+
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    const confidence = (95 + Math.random() * 5).toFixed(1);
+
+    // Add to present list
+    const newPresentStudent = {
+        id: studentId,
+        name: studentName,
+        time: timeStr,
+        confidence: parseFloat(confidence)
+    };
+    window.attendanceData.present.push(newPresentStudent);
+
+    // Remove from absent list
+    window.attendanceData.absent = window.attendanceData.absent.filter(s => s.id !== studentId);
+
+    // Re-render both tables
+    renderPresentTable(window.attendanceData.present);
+    renderAbsentTable(window.attendanceData.absent);
+
+    // Update counts
+    studentsMarkedCount = window.attendanceData.present.length;
+    updateStudentsMarked(studentsMarkedCount);
+
+    // Log and notify
+    addLogEntry(`${studentName} manually marked present`, 'success');
+    showNotification(`${studentName} marked present!`, 'success');
+}
+
+function markAllPresent() {
+    if (!window.attendanceData) return;
+
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+    // Mark all absent students as present
+    window.attendanceData.absent.forEach(student => {
+        const confidence = (95 + Math.random() * 5).toFixed(1);
+        window.attendanceData.present.push({
+            id: student.id,
+            name: student.name,
+            time: timeStr,
+            confidence: parseFloat(confidence)
+        });
+    });
+
+    const markedCount = window.attendanceData.absent.length;
+    window.attendanceData.absent = [];
+
+    // Re-render both tables
+    renderPresentTable(window.attendanceData.present);
+    renderAbsentTable(window.attendanceData.absent);
+
+    // Update counts
+    studentsMarkedCount = window.attendanceData.present.length;
+    updateStudentsMarked(studentsMarkedCount);
+
+    addLogEntry(`Marked ${markedCount} students as present`, 'success');
+    showNotification(`All ${markedCount} absent students marked present!`, 'success');
 }
 
 /* ========================================
@@ -511,26 +656,40 @@ function updateLogTimestamp() {
 }
 
 /* ========================================
-   Search Functionality
+   Search Functionality - Two Column Layout
    ======================================== */
 function initializeSearch() {
-    const searchInput = document.getElementById('searchStudent');
-    if (!searchInput) return;
-
-    searchInput.addEventListener('input', function () {
-        const query = this.value.toLowerCase().trim();
-        const rows = document.querySelectorAll('#attendanceData tr');
-
-        rows.forEach(row => {
-            const name = row.querySelector('.student-name');
-            const id = row.querySelector('.student-id');
-
-            if (name && id) {
-                const matches = name.textContent.toLowerCase().includes(query) ||
-                    id.textContent.toLowerCase().includes(query);
-                row.style.display = matches ? '' : 'none';
-            }
+    // Search for Present table
+    const searchPresent = document.getElementById('searchPresent');
+    if (searchPresent) {
+        searchPresent.addEventListener('input', function () {
+            const query = this.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('#presentData tr');
+            filterTableRows(rows, query);
         });
+    }
+
+    // Search for Absent table
+    const searchAbsent = document.getElementById('searchAbsent');
+    if (searchAbsent) {
+        searchAbsent.addEventListener('input', function () {
+            const query = this.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('#absentData tr');
+            filterTableRows(rows, query);
+        });
+    }
+}
+
+function filterTableRows(rows, query) {
+    rows.forEach(row => {
+        const name = row.querySelector('.student-name');
+        const id = row.querySelector('.student-id');
+
+        if (name && id) {
+            const matches = name.textContent.toLowerCase().includes(query) ||
+                id.textContent.toLowerCase().includes(query);
+            row.style.display = matches ? '' : 'none';
+        }
     });
 }
 
@@ -538,31 +697,31 @@ function initializeSearch() {
    Export Functionality
    ======================================== */
 function exportAttendance() {
-    const tableBody = document.getElementById('attendanceData');
-    if (!tableBody) {
+    if (!window.attendanceData) {
         showNotification('No attendance data to export', 'warning');
         return;
     }
 
-    const rows = tableBody.querySelectorAll('tr');
-    if (rows.length === 0) {
+    const { present, absent } = window.attendanceData;
+
+    if (present.length === 0 && absent.length === 0) {
         showNotification('No attendance data to export', 'warning');
         return;
     }
+
+    const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
     // Build CSV content
     let csvContent = 'Name,Roll No,Date,Time,Confidence,Status\n';
 
-    rows.forEach(row => {
-        const name = row.querySelector('.student-name')?.textContent || '';
-        const id = row.querySelector('.student-id')?.textContent || '';
-        const cells = row.querySelectorAll('td');
-        const date = cells[3]?.textContent || '';
-        const time = cells[4]?.textContent || '';
-        const confidence = cells[5]?.textContent?.replace('%', '') || '';
-        const status = row.querySelector('.status-badge')?.textContent?.trim() || '';
+    // Add present students
+    present.forEach(student => {
+        csvContent += `"${student.name}","${student.id}","${today}","${student.time}","${student.confidence}%","Present"\n`;
+    });
 
-        csvContent += `"${name}","${id}","${date}","${time}","${confidence}","${status}"\n`;
+    // Add absent students
+    absent.forEach(student => {
+        csvContent += `"${student.name}","${student.id}","${today}","--:--","--","Absent"\n`;
     });
 
     // Download CSV
@@ -718,15 +877,19 @@ function logout() {
    Demo Mode Functions
    ======================================== */
 function simulateRecognition() {
-    if (!isAttendanceRunning) {
-        // Allow simulation anyway for demo
+    if (!window.attendanceData) return;
+
+    // Pick a random absent student to mark present
+    if (window.attendanceData.absent.length === 0) {
+        showNotification('All students are already marked present!', 'info');
+        return;
     }
 
-    const names = ['Aditya Verma', 'Kavya Nair', 'Rohan Mehta', 'Ananya Iyer', 'Siddharth Joshi'];
-    const randomName = names[Math.floor(Math.random() * names.length)];
-    const initials = randomName.split(' ').map(n => n[0]).join('');
-    const rollNo = `CSE${String(Math.floor(Math.random() * 100)).padStart(3, '0')}`;
+    const randomIndex = Math.floor(Math.random() * window.attendanceData.absent.length);
+    const student = window.attendanceData.absent[randomIndex];
     const confidence = (95 + Math.random() * 5).toFixed(1);
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
     // Add to recognition feed
     const recognitionFeed = document.getElementById('recognitionFeed');
@@ -735,7 +898,7 @@ function simulateRecognition() {
         item.className = 'recognition-item success fade-in';
         item.innerHTML = `
             <span class="recognition-icon">✓</span>
-            <span class="recognition-text"><strong>${randomName}</strong> recognized (${confidence}%)</span>
+            <span class="recognition-text"><strong>${student.name}</strong> recognized (${confidence}%)</span>
         `;
         recognitionFeed.insertBefore(item, recognitionFeed.firstChild);
 
@@ -746,51 +909,10 @@ function simulateRecognition() {
     }
 
     // Add log entry
-    addLogEntry(`${randomName} marked present (${confidence}% confidence)`, 'success');
+    addLogEntry(`${student.name} marked present (${confidence}% confidence)`, 'success');
 
-    // Add to attendance table
-    const tableBody = document.getElementById('attendanceData');
-    if (tableBody) {
-        const now = new Date();
-        const row = document.createElement('tr');
-        row.classList.add('fade-in');
-        row.innerHTML = `
-            <td>
-                <input type="checkbox" class="checkbox-styled">
-            </td>
-            <td>
-                <div class="student-info">
-                    <div class="student-avatar">${initials}</div>
-                    <div>
-                        <div class="student-name">${randomName}</div>
-                    </div>
-                </div>
-            </td>
-            <td class="student-id">${rollNo}</td>
-            <td>${formatDate(now.toISOString().split('T')[0])}</td>
-            <td>${now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</td>
-            <td><span class="confidence-badge">${confidence}%</span></td>
-            <td>
-                <span class="status-badge present">
-                    <span class="badge-dot"></span>
-                    Present
-                </span>
-            </td>
-        `;
-        tableBody.insertBefore(row, tableBody.firstChild);
-
-        // Update count
-        studentsMarkedCount++;
-        updateStudentsMarked(studentsMarkedCount);
-
-        // Hide empty state
-        const emptyState = document.getElementById('emptyState');
-        if (emptyState) {
-            emptyState.classList.remove('visible');
-        }
-    }
-
-    showNotification(`${randomName} recognized!`, 'success');
+    // Move student from absent to present
+    markStudentPresent(student.id, student.name);
 }
 
 /* ========================================

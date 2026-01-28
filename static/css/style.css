@@ -2271,3 +2271,105 @@ body.theme-light .stat-card {
         width: 100%;
     }
 }
+
+/* ========================================
+   Two-Column Attendance Layout
+   ======================================== */
+.attendance-dual-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+@media (max-width: 1200px) {
+    .attendance-dual-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Present Panel Styling */
+.present-panel {
+    border: 1px solid rgba(72, 187, 120, 0.2);
+}
+
+.present-header {
+    background: rgba(72, 187, 120, 0.1);
+    border-bottom: 1px solid rgba(72, 187, 120, 0.2) !important;
+}
+
+.present-header h3 {
+    color: #48bb78;
+}
+
+.present-badge {
+    background: rgba(72, 187, 120, 0.2) !important;
+    color: #48bb78 !important;
+}
+
+/* Absent Panel Styling */
+.absent-panel {
+    border: 1px solid rgba(252, 129, 129, 0.2);
+}
+
+.absent-header {
+    background: rgba(252, 129, 129, 0.1);
+    border-bottom: 1px solid rgba(252, 129, 129, 0.2) !important;
+}
+
+.absent-header h3 {
+    color: #fc8181;
+}
+
+.absent-badge {
+    background: rgba(252, 129, 129, 0.2) !important;
+    color: #fc8181 !important;
+}
+
+/* Mark Present Button in Absent Table */
+.btn-mark-present {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-mark-present:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(72, 187, 120, 0.4);
+}
+
+/* Action Buttons Row */
+.action-buttons-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.action-buttons-row .btn {
+    flex: 1;
+    min-width: 150px;
+}
+
+@media (max-width: 768px) {
+    .action-buttons-row {
+        flex-direction: column;
+    }
+    
+    .action-buttons-row .btn {
+        width: 100%;
+    }
+}
+
+/* Attendance Count Badge Enhancements */
+.attendance-count-badge {
+    font-size: 0.85rem;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    margin-left: 12px;
+}
