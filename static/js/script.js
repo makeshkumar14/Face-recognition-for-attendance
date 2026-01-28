@@ -1,20 +1,53 @@
 /* ========================================
    AI Face Recognition Attendance System
-   Main JavaScript File
+   Enhanced JavaScript File
    ======================================== */
+
+// Global State
+let isAttendanceRunning = false;
+let facesDetectedCount = 0;
+let studentsMarkedCount = 0;
+let currentTheme = 'dark';
 
 // DOM Content Loaded
 document.addEventListener('DOMContentLoaded', function () {
     initializeAnimations();
     initializeFormValidation();
     initializeDashboard();
+    initializeTheme();
+    initializeSearch();
+    updateSessionDate();
 });
+
+/* ========================================
+   Theme Toggle
+   ======================================== */
+function initializeTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    setTheme(savedTheme);
+}
+
+function toggleTheme() {
+    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    setTheme(currentTheme);
+    localStorage.setItem('theme', currentTheme);
+}
+
+function setTheme(theme) {
+    currentTheme = theme;
+    document.body.classList.remove('theme-dark', 'theme-light');
+    document.body.classList.add(`theme-${theme}`);
+
+    const themeIcon = document.querySelector('.theme-icon');
+    if (themeIcon) {
+        themeIcon.textContent = theme === 'dark' ? '🌙' : '☀️';
+    }
+}
 
 /* ========================================
    Page Load Animations
    ======================================== */
 function initializeAnimations() {
-    // Add fade-in animation to main elements
     const animatedElements = document.querySelectorAll('.fade-in, .slide-up');
 
     animatedElements.forEach((el, index) => {
@@ -24,7 +57,6 @@ function initializeAnimations() {
         }, 100 * (index + 1));
     });
 
-    // Animate cards on scroll
     const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
@@ -52,7 +84,6 @@ function initializeFormValidation() {
     forms.forEach(form => {
         const inputs = form.querySelectorAll('.form-input');
 
-        // Add focus animations
         inputs.forEach(input => {
             input.addEventListener('focus', function () {
                 this.parentElement.classList.add('focused');
@@ -70,7 +101,6 @@ function initializeFormValidation() {
             });
         });
 
-        // Form submission
         form.addEventListener('submit', function (e) {
             let isValid = true;
 
@@ -104,10 +134,7 @@ function validateInput(input) {
 /* ========================================
    Dashboard Functions
    ======================================== */
-let isAttendanceRunning = false;
-
 function initializeDashboard() {
-    // Check if we're on the faculty dashboard
     const startBtn = document.getElementById('startAttendance');
     const stopBtn = document.getElementById('stopAttendance');
 
@@ -116,12 +143,28 @@ function initializeDashboard() {
         stopBtn.addEventListener('click', stopAttendance);
     }
 
-    // Initialize attendance table if exists
     loadAttendanceData();
-
-    // Update current time
     updateCurrentTime();
     setInterval(updateCurrentTime, 1000);
+
+    // Initialize log timestamp
+    updateLogTimestamp();
+}
+
+function updateSessionDate() {
+    const sessionDateEl = document.getElementById('sessionDate');
+    const currentDateEl = document.getElementById('currentDate');
+
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+    });
+
+    if (sessionDateEl) sessionDateEl.textContent = dateStr;
+    if (currentDateEl) currentDateEl.textContent = dateStr;
 }
 
 /* ========================================
@@ -130,95 +173,209 @@ function initializeDashboard() {
 function startAttendance() {
     const startBtn = document.getElementById('startAttendance');
     const stopBtn = document.getElementById('stopAttendance');
-    const statusDot = document.querySelector('.status-dot');
-    const statusTitle = document.querySelector('.status-text h4');
-    const statusDesc = document.querySelector('.status-text p');
-    const webcamContainer = document.querySelector('.webcam-container');
+    const resetBtn = document.getElementById('resetSession');
 
-    // Show loading state
     startBtn.disabled = true;
     startBtn.innerHTML = '<span class="btn-icon">⏳</span> Starting...';
 
-    // API call to start attendance (placeholder)
-    fetch('/start', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-        .then(response => {
-            // For demo purposes, simulate success
-            return { success: true };
-        })
-        .then(data => {
-            isAttendanceRunning = true;
+    // Simulate API call
+    setTimeout(() => {
+        isAttendanceRunning = true;
 
-            // Update UI
-            statusDot.classList.remove('stopped');
-            statusDot.classList.add('running');
-            statusTitle.textContent = 'Attendance Running';
-            statusDesc.textContent = 'Face recognition is actively scanning...';
+        // Update status indicator
+        updateStatusIndicator(true);
 
-            startBtn.disabled = true;
-            startBtn.innerHTML = '<span class="btn-icon">▶️</span> Start Attendance';
-            stopBtn.disabled = false;
+        // Update session status badge
+        updateSessionBadge(true);
 
+        // Update camera status
+        updateCameraStatus(true);
+
+        // Update button states
+        startBtn.disabled = true;
+        startBtn.innerHTML = '<span class="btn-icon">▶️</span> Start Attendance';
+        stopBtn.disabled = false;
+        if (resetBtn) resetBtn.disabled = true;
+
+        // Activate webcam container
+        const webcamContainer = document.querySelector('.webcam-container');
+        if (webcamContainer) {
             webcamContainer.classList.add('active');
+        }
 
-            showNotification('Attendance started successfully!', 'success');
-        })
-        .catch(error => {
-            startBtn.disabled = false;
-            startBtn.innerHTML = '<span class="btn-icon">▶️</span> Start Attendance';
-            showNotification('Failed to start attendance. Please try again.', 'error');
-        });
+        // Add log entry
+        addLogEntry('Attendance session started', 'success');
+
+        showNotification('Attendance started successfully!', 'success');
+
+        // Start face detection simulation
+        startFaceDetectionSimulation();
+
+    }, 1000);
 }
 
 function stopAttendance() {
     const startBtn = document.getElementById('startAttendance');
     const stopBtn = document.getElementById('stopAttendance');
-    const statusDot = document.querySelector('.status-dot');
-    const statusTitle = document.querySelector('.status-text h4');
-    const statusDesc = document.querySelector('.status-text p');
-    const webcamContainer = document.querySelector('.webcam-container');
+    const resetBtn = document.getElementById('resetSession');
 
-    // Show loading state
     stopBtn.disabled = true;
     stopBtn.innerHTML = '<span class="btn-icon">⏳</span> Stopping...';
 
-    // API call to stop attendance (placeholder)
-    fetch('/stop', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-        .then(response => {
-            // For demo purposes, simulate success
-            return { success: true };
-        })
-        .then(data => {
-            isAttendanceRunning = false;
+    setTimeout(() => {
+        isAttendanceRunning = false;
 
-            // Update UI
-            statusDot.classList.remove('running');
-            statusDot.classList.add('stopped');
-            statusTitle.textContent = 'Attendance Stopped';
-            statusDesc.textContent = 'Click "Start Attendance" to begin face recognition';
+        // Update status indicator
+        updateStatusIndicator(false);
 
-            stopBtn.disabled = true;
-            stopBtn.innerHTML = '<span class="btn-icon">⏹️</span> Stop Attendance';
-            startBtn.disabled = false;
+        // Update session status badge
+        updateSessionBadge(false);
 
+        // Update camera status
+        updateCameraStatus(false);
+
+        // Update button states
+        stopBtn.disabled = true;
+        stopBtn.innerHTML = '<span class="btn-icon">⏹️</span> Stop Attendance';
+        startBtn.disabled = false;
+        if (resetBtn) resetBtn.disabled = false;
+
+        // Deactivate webcam container
+        const webcamContainer = document.querySelector('.webcam-container');
+        if (webcamContainer) {
             webcamContainer.classList.remove('active');
+        }
 
-            showNotification('Attendance stopped successfully!', 'info');
-        })
-        .catch(error => {
-            stopBtn.disabled = false;
-            stopBtn.innerHTML = '<span class="btn-icon">⏹️</span> Stop Attendance';
-            showNotification('Failed to stop attendance. Please try again.', 'error');
-        });
+        // Add log entry
+        addLogEntry('Attendance session stopped', 'info');
+
+        showNotification('Attendance stopped successfully!', 'info');
+
+    }, 1000);
+}
+
+function resetSession() {
+    if (!confirm('Are you sure you want to reset this session? All attendance data will be cleared.')) {
+        return;
+    }
+
+    facesDetectedCount = 0;
+    studentsMarkedCount = 0;
+
+    updateFacesDetected(0);
+    updateStudentsMarked(0);
+
+    // Clear attendance table
+    const tableBody = document.getElementById('attendanceData');
+    if (tableBody) {
+        tableBody.innerHTML = '';
+    }
+
+    // Update badge
+    const badge = document.getElementById('attendanceCountBadge');
+    if (badge) {
+        badge.textContent = '0 marked';
+    }
+
+    // Show empty state
+    const emptyState = document.getElementById('emptyState');
+    if (emptyState) {
+        emptyState.classList.add('visible');
+    }
+
+    // Clear logs
+    clearLogs();
+
+    addLogEntry('Session reset successfully', 'warning');
+    showNotification('Session has been reset', 'warning');
+}
+
+/* ========================================
+   Status Update Functions
+   ======================================== */
+function updateStatusIndicator(isRunning) {
+    const statusDot = document.querySelector('.status-dot');
+    const statusTitle = document.querySelector('.status-text h4');
+    const statusDesc = document.querySelector('.status-text p');
+
+    if (statusDot) {
+        statusDot.classList.remove('running', 'stopped');
+        statusDot.classList.add(isRunning ? 'running' : 'stopped');
+    }
+
+    if (statusTitle) {
+        statusTitle.textContent = isRunning ? 'Attendance Running' : 'Attendance Stopped';
+    }
+
+    if (statusDesc) {
+        statusDesc.textContent = isRunning
+            ? 'Face recognition is actively scanning...'
+            : 'Click "Start Attendance" to begin face recognition';
+    }
+}
+
+function updateSessionBadge(isRunning) {
+    const badge = document.getElementById('sessionStatusBadge');
+    if (badge) {
+        badge.classList.remove('running', 'stopped');
+        badge.classList.add(isRunning ? 'running' : 'stopped');
+        badge.innerHTML = `<span class="status-dot-mini"></span>${isRunning ? 'Running' : 'Stopped'}`;
+    }
+}
+
+function updateCameraStatus(isActive) {
+    const statusEl = document.getElementById('cameraStatus');
+    const iconEl = document.getElementById('cameraStatusIcon');
+
+    if (statusEl) {
+        statusEl.textContent = isActive ? 'Active' : 'Inactive';
+        statusEl.className = isActive ? 'status-active' : 'status-inactive';
+    }
+
+    if (iconEl) {
+        iconEl.classList.toggle('active', isActive);
+    }
+}
+
+function updateFacesDetected(count) {
+    const el = document.getElementById('facesDetected');
+    if (el) {
+        el.textContent = count;
+        el.classList.add('live-count');
+    }
+}
+
+function updateStudentsMarked(count) {
+    const el = document.getElementById('studentsMarked');
+    if (el) {
+        el.textContent = count;
+    }
+
+    const badge = document.getElementById('attendanceCountBadge');
+    if (badge) {
+        badge.textContent = `${count} marked`;
+    }
+}
+
+/* ========================================
+   Face Detection Simulation
+   ======================================== */
+function startFaceDetectionSimulation() {
+    if (!isAttendanceRunning) return;
+
+    // Simulate random face detection every 3-7 seconds
+    const delay = 3000 + Math.random() * 4000;
+
+    setTimeout(() => {
+        if (isAttendanceRunning) {
+            // Random faces detected
+            facesDetectedCount = Math.floor(Math.random() * 3) + 1;
+            updateFacesDetected(facesDetectedCount);
+
+            // Continue simulation
+            startFaceDetectionSimulation();
+        }
+    }, delay);
 }
 
 /* ========================================
@@ -229,28 +386,29 @@ function loadAttendanceData() {
 
     if (!tableBody) return;
 
-    // Sample data for demo
     const sampleData = [
-        { id: 'CSE001', name: 'Rahul Kumar', date: '2026-01-28', time: '09:15 AM', status: 'present' },
-        { id: 'CSE002', name: 'Priya Sharma', date: '2026-01-28', time: '09:18 AM', status: 'present' },
-        { id: 'CSE003', name: 'Amit Singh', date: '2026-01-28', time: '09:22 AM', status: 'present' },
-        { id: 'CSE004', name: 'Sneha Patel', date: '2026-01-28', time: '--:-- --', status: 'absent' },
-        { id: 'CSE005', name: 'Vikram Reddy', date: '2026-01-28', time: '09:30 AM', status: 'present' },
+        { id: 'CSE001', name: 'Rahul Kumar', date: '2026-01-28', time: '09:15 AM', status: 'present', confidence: 98.5 },
+        { id: 'CSE002', name: 'Priya Sharma', date: '2026-01-28', time: '09:18 AM', status: 'present', confidence: 97.2 },
+        { id: 'CSE003', name: 'Amit Singh', date: '2026-01-28', time: '09:22 AM', status: 'present', confidence: 99.1 },
+        { id: 'CSE004', name: 'Sneha Patel', date: '2026-01-28', time: '--:-- --', status: 'absent', confidence: 0 },
+        { id: 'CSE005', name: 'Vikram Reddy', date: '2026-01-28', time: '09:30 AM', status: 'present', confidence: 96.8 },
     ];
 
-    // Fetch from API (placeholder)
-    // In production, replace with actual API call:
-    // fetch('/attendance')
-    //     .then(response => response.json())
-    //     .then(data => renderAttendanceTable(data));
-
     renderAttendanceTable(sampleData);
+    studentsMarkedCount = sampleData.filter(s => s.status === 'present').length;
+    updateStudentsMarked(studentsMarkedCount);
 }
 
 function renderAttendanceTable(data) {
     const tableBody = document.getElementById('attendanceData');
 
     if (!tableBody) return;
+
+    // Hide empty state
+    const emptyState = document.getElementById('emptyState');
+    if (emptyState && data.length > 0) {
+        emptyState.classList.remove('visible');
+    }
 
     tableBody.innerHTML = '';
 
@@ -260,28 +418,168 @@ function renderAttendanceTable(data) {
         row.classList.add('fade-in');
 
         const initials = student.name.split(' ').map(n => n[0]).join('');
+        const confidenceHtml = student.confidence > 0
+            ? `<span class="confidence-badge">${student.confidence}%</span>`
+            : '<span class="confidence-badge low">--</span>';
 
         row.innerHTML = `
+            <td>
+                <input type="checkbox" class="checkbox-styled">
+            </td>
             <td>
                 <div class="student-info">
                     <div class="student-avatar">${initials}</div>
                     <div>
                         <div class="student-name">${student.name}</div>
-                        <div class="student-id">${student.id}</div>
                     </div>
                 </div>
             </td>
+            <td class="student-id">${student.id}</td>
             <td>${formatDate(student.date)}</td>
             <td>${student.time}</td>
+            <td>${confidenceHtml}</td>
             <td>
                 <span class="status-badge ${student.status}">
-                    ${student.status === 'present' ? '✓' : '✗'} ${capitalizeFirst(student.status)}
+                    <span class="badge-dot"></span>
+                    ${capitalizeFirst(student.status)}
                 </span>
             </td>
         `;
 
         tableBody.appendChild(row);
     });
+}
+
+/* ========================================
+   Activity Log Functions
+   ======================================== */
+function addLogEntry(message, type = 'info') {
+    const logsContainer = document.getElementById('activityLogs');
+    if (!logsContainer) return;
+
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    });
+
+    const icons = {
+        success: '✓',
+        error: '✗',
+        warning: '⚠️',
+        info: 'ℹ️'
+    };
+
+    const logItem = document.createElement('div');
+    logItem.className = `log-item ${type} fade-in`;
+    logItem.innerHTML = `
+        <span class="log-time">${timeStr}</span>
+        <span class="log-icon">${icons[type]}</span>
+        <span class="log-message">${message}</span>
+    `;
+
+    // Insert at the top
+    logsContainer.insertBefore(logItem, logsContainer.firstChild);
+
+    // Limit to 50 entries
+    while (logsContainer.children.length > 50) {
+        logsContainer.removeChild(logsContainer.lastChild);
+    }
+}
+
+function clearLogs() {
+    const logsContainer = document.getElementById('activityLogs');
+    if (logsContainer) {
+        logsContainer.innerHTML = '';
+        addLogEntry('Logs cleared', 'info');
+    }
+}
+
+function updateLogTimestamp() {
+    const firstLog = document.querySelector('.log-item .log-time');
+    if (firstLog && firstLog.textContent === '--:--:--') {
+        const now = new Date();
+        firstLog.textContent = now.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        });
+    }
+}
+
+/* ========================================
+   Search Functionality
+   ======================================== */
+function initializeSearch() {
+    const searchInput = document.getElementById('searchStudent');
+    if (!searchInput) return;
+
+    searchInput.addEventListener('input', function () {
+        const query = this.value.toLowerCase().trim();
+        const rows = document.querySelectorAll('#attendanceData tr');
+
+        rows.forEach(row => {
+            const name = row.querySelector('.student-name');
+            const id = row.querySelector('.student-id');
+
+            if (name && id) {
+                const matches = name.textContent.toLowerCase().includes(query) ||
+                    id.textContent.toLowerCase().includes(query);
+                row.style.display = matches ? '' : 'none';
+            }
+        });
+    });
+}
+
+/* ========================================
+   Export Functionality
+   ======================================== */
+function exportAttendance() {
+    const tableBody = document.getElementById('attendanceData');
+    if (!tableBody) {
+        showNotification('No attendance data to export', 'warning');
+        return;
+    }
+
+    const rows = tableBody.querySelectorAll('tr');
+    if (rows.length === 0) {
+        showNotification('No attendance data to export', 'warning');
+        return;
+    }
+
+    // Build CSV content
+    let csvContent = 'Name,Roll No,Date,Time,Confidence,Status\n';
+
+    rows.forEach(row => {
+        const name = row.querySelector('.student-name')?.textContent || '';
+        const id = row.querySelector('.student-id')?.textContent || '';
+        const cells = row.querySelectorAll('td');
+        const date = cells[3]?.textContent || '';
+        const time = cells[4]?.textContent || '';
+        const confidence = cells[5]?.textContent?.replace('%', '') || '';
+        const status = row.querySelector('.status-badge')?.textContent?.trim() || '';
+
+        csvContent += `"${name}","${id}","${date}","${time}","${confidence}","${status}"\n`;
+    });
+
+    // Download CSV
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', `attendance_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    addLogEntry('Attendance exported to CSV', 'success');
+    showNotification('Attendance exported successfully!', 'success');
 }
 
 /* ========================================
@@ -306,30 +604,17 @@ function updateCurrentTime() {
             second: '2-digit'
         });
     }
-
-    const dateElement = document.getElementById('currentDate');
-    if (dateElement) {
-        const now = new Date();
-        dateElement.textContent = now.toLocaleDateString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    }
 }
 
 /* ========================================
    Notification System
    ======================================== */
 function showNotification(message, type = 'info') {
-    // Remove existing notifications
     const existingNotification = document.querySelector('.notification');
     if (existingNotification) {
         existingNotification.remove();
     }
 
-    // Create notification element
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
 
@@ -346,7 +631,6 @@ function showNotification(message, type = 'info') {
         <button class="notification-close" onclick="this.parentElement.remove()">×</button>
     `;
 
-    // Add styles dynamically
     notification.style.cssText = `
         position: fixed;
         top: 20px;
@@ -362,7 +646,6 @@ function showNotification(message, type = 'info') {
         font-weight: 500;
     `;
 
-    // Type-specific colors
     const colors = {
         success: { bg: 'rgba(72, 187, 120, 0.95)', color: '#fff' },
         error: { bg: 'rgba(252, 129, 129, 0.95)', color: '#fff' },
@@ -373,18 +656,11 @@ function showNotification(message, type = 'info') {
     notification.style.background = colors[type].bg;
     notification.style.color = colors[type].color;
 
-    // Add animation
     const style = document.createElement('style');
     style.textContent = `
         @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
         .notification-close {
             background: none;
@@ -395,15 +671,24 @@ function showNotification(message, type = 'info') {
             opacity: 0.7;
             transition: opacity 0.2s;
         }
-        .notification-close:hover {
-            opacity: 1;
+        .notification-close:hover { opacity: 1; }
+        .confidence-badge {
+            padding: 4px 10px;
+            background: rgba(72, 187, 120, 0.15);
+            color: #48bb78;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .confidence-badge.low {
+            background: rgba(113, 128, 150, 0.15);
+            color: #718096;
         }
     `;
     document.head.appendChild(style);
 
     document.body.appendChild(notification);
 
-    // Auto-remove after 4 seconds
     setTimeout(() => {
         if (notification.parentElement) {
             notification.style.animation = 'slideInRight 0.3s ease reverse forwards';
@@ -420,9 +705,7 @@ function navigateTo(url) {
 }
 
 function logout() {
-    // Show confirmation
     if (confirm('Are you sure you want to logout?')) {
-        // Clear any session data
         showNotification('Logging out...', 'info');
 
         setTimeout(() => {
@@ -432,19 +715,38 @@ function logout() {
 }
 
 /* ========================================
-   Demo Mode Functions (For Testing)
+   Demo Mode Functions
    ======================================== */
 function simulateRecognition() {
     if (!isAttendanceRunning) {
-        showNotification('Please start attendance first', 'warning');
-        return;
+        // Allow simulation anyway for demo
     }
 
-    const names = ['John Doe', 'Jane Smith', 'Mike Johnson', 'Emily Davis'];
+    const names = ['Aditya Verma', 'Kavya Nair', 'Rohan Mehta', 'Ananya Iyer', 'Siddharth Joshi'];
     const randomName = names[Math.floor(Math.random() * names.length)];
     const initials = randomName.split(' ').map(n => n[0]).join('');
+    const rollNo = `CSE${String(Math.floor(Math.random() * 100)).padStart(3, '0')}`;
+    const confidence = (95 + Math.random() * 5).toFixed(1);
 
-    showNotification(`Face recognized: ${randomName}`, 'success');
+    // Add to recognition feed
+    const recognitionFeed = document.getElementById('recognitionFeed');
+    if (recognitionFeed) {
+        const item = document.createElement('div');
+        item.className = 'recognition-item success fade-in';
+        item.innerHTML = `
+            <span class="recognition-icon">✓</span>
+            <span class="recognition-text"><strong>${randomName}</strong> recognized (${confidence}%)</span>
+        `;
+        recognitionFeed.insertBefore(item, recognitionFeed.firstChild);
+
+        // Limit items
+        while (recognitionFeed.children.length > 5) {
+            recognitionFeed.removeChild(recognitionFeed.lastChild);
+        }
+    }
+
+    // Add log entry
+    addLogEntry(`${randomName} marked present (${confidence}% confidence)`, 'success');
 
     // Add to attendance table
     const tableBody = document.getElementById('attendanceData');
@@ -454,22 +756,58 @@ function simulateRecognition() {
         row.classList.add('fade-in');
         row.innerHTML = `
             <td>
+                <input type="checkbox" class="checkbox-styled">
+            </td>
+            <td>
                 <div class="student-info">
                     <div class="student-avatar">${initials}</div>
                     <div>
                         <div class="student-name">${randomName}</div>
-                        <div class="student-id">CSE00${Math.floor(Math.random() * 100)}</div>
                     </div>
                 </div>
             </td>
+            <td class="student-id">${rollNo}</td>
             <td>${formatDate(now.toISOString().split('T')[0])}</td>
             <td>${now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</td>
+            <td><span class="confidence-badge">${confidence}%</span></td>
             <td>
                 <span class="status-badge present">
-                    ✓ Present
+                    <span class="badge-dot"></span>
+                    Present
                 </span>
             </td>
         `;
         tableBody.insertBefore(row, tableBody.firstChild);
+
+        // Update count
+        studentsMarkedCount++;
+        updateStudentsMarked(studentsMarkedCount);
+
+        // Hide empty state
+        const emptyState = document.getElementById('emptyState');
+        if (emptyState) {
+            emptyState.classList.remove('visible');
+        }
     }
+
+    showNotification(`${randomName} recognized!`, 'success');
+}
+
+/* ========================================
+   Student Dashboard Functions
+   ======================================== */
+function markAllRead() {
+    const notifications = document.querySelectorAll('.notification-item.unread');
+    notifications.forEach(notif => {
+        notif.classList.remove('unread');
+        notif.classList.add('read');
+    });
+
+    const badge = document.getElementById('notificationCount');
+    if (badge) {
+        badge.textContent = '0';
+        badge.style.display = 'none';
+    }
+
+    showNotification('All notifications marked as read', 'success');
 }
