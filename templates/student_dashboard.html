@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Student Dashboard - AI-Powered Face Recognition Attendance System">
+    <title>Student Dashboard | Smart Attendance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animated"></div>
+
+    <!-- Dashboard Layout -->
+    <div class="dashboard">
+        <!-- Dashboard Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <div class="header-logo">🎯</div>
+                <div class="header-title">
+                    <h1>Student Dashboard</h1>
+                    <p>Your Attendance Overview</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="user-avatar">SK</div>
+                    <div class="user-details">
+                        <span class="user-name">Student Name</span>
+                        <span class="user-role">CSE - 3rd Year</span>
+                    </div>
+                </div>
+                <button class="btn btn-logout" onclick="logout()">
+                    <span class="btn-icon">🚪</span>
+                    Logout
+                </button>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <main class="dashboard-content">
+            <!-- Welcome Section -->
+            <div class="welcome-section fade-in">
+                <div class="welcome-avatar">SK</div>
+                <h2>Welcome back, Student!</h2>
+                <p>Here's your attendance summary for today</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid slide-up delay-1">
+                <div class="stat-card">
+                    <div class="stat-icon primary">📅</div>
+                    <div class="stat-info">
+                        <h3 id="currentDate">--</h3>
+                        <p>Today's Date</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success">📊</div>
+                    <div class="stat-info">
+                        <h3>92%</h3>
+                        <p>Overall Attendance</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon warning">📚</div>
+                    <div class="stat-info">
+                        <h3>46/50</h3>
+                        <p>Classes Attended</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon danger">⚠️</div>
+                    <div class="stat-info">
+                        <h3>4</h3>
+                        <p>Classes Missed</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Attendance Status -->
+            <div class="attendance-status-card slide-up delay-2">
+                <div class="attendance-status-icon present">
+                    ✓
+                </div>
+                <h3>You are marked as Present today!</h3>
+                <p>Attendance recorded at 09:15 AM via Face Recognition</p>
+            </div>
+
+            <!-- Attendance History -->
+            <div class="panel-section slide-up delay-3">
+                <div class="panel-header">
+                    <h3>
+                        <span class="panel-header-icon">📋</span>
+                        Attendance History
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <div class="table-container">
+                        <table class="attendance-table">
+                            <thead>
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="fade-in">
+                                    <td>
+                                        <div class="student-info">
+                                            <div class="student-avatar"
+                                                style="background: linear-gradient(135deg, #667eea, #764ba2);">AI</div>
+                                            <div>
+                                                <div class="student-name">Artificial Intelligence</div>
+                                                <div class="student-id">Prof. Sharma</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Jan 28, 2026</td>
+                                    <td>09:15 AM</td>
+                                    <td><span class="status-badge present">✓ Present</span></td>
+                                </tr>
+                                <tr class="fade-in">
+                                    <td>
+                                        <div class="student-info">
+                                            <div class="student-avatar"
+                                                style="background: linear-gradient(135deg, #48bb78, #38a169);">ML</div>
+                                            <div>
+                                                <div class="student-name">Machine Learning</div>
+                                                <div class="student-id">Prof. Gupta</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Jan 27, 2026</td>
+                                    <td>10:30 AM</td>
+                                    <td><span class="status-badge present">✓ Present</span></td>
+                                </tr>
+                                <tr class="fade-in">
+                                    <td>
+                                        <div class="student-info">
+                                            <div class="student-avatar"
+                                                style="background: linear-gradient(135deg, #f6ad55, #ed8936);">DB</div>
+                                            <div>
+                                                <div class="student-name">Database Systems</div>
+                                                <div class="student-id">Prof. Kumar</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Jan 26, 2026</td>
+                                    <td>02:00 PM</td>
+                                    <td><span class="status-badge present">✓ Present</span></td>
+                                </tr>
+                                <tr class="fade-in">
+                                    <td>
+                                        <div class="student-info">
+                                            <div class="student-avatar"
+                                                style="background: linear-gradient(135deg, #fc8181, #f56565);">CN</div>
+                                            <div>
+                                                <div class="student-name">Computer Networks</div>
+                                                <div class="student-id">Prof. Singh</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Jan 25, 2026</td>
+                                    <td>11:00 AM</td>
+                                    <td><span class="status-badge absent">✗ Absent</span></td>
+                                </tr>
+                                <tr class="fade-in">
+                                    <td>
+                                        <div class="student-info">
+                                            <div class="student-avatar"
+                                                style="background: linear-gradient(135deg, #63b3ed, #4299e1);">OS</div>
+                                            <div>
+                                                <div class="student-name">Operating Systems</div>
+                                                <div class="student-id">Prof. Patel</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Jan 24, 2026</td>
+                                    <td>09:00 AM</td>
+                                    <td><span class="status-badge present">✓ Present</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+
+</html>
