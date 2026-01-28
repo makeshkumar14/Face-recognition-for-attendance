@@ -53,7 +53,8 @@
                 <div class="session-info-grid">
                     <div class="session-item">
                         <span class="session-label">📚 Subject</span>
-                        <span class="session-value" id="sessionSubject">Artificial Intelligence</span>
+                        <span class="session-value" id="sessionSubject">{{ session.get('current_subject', 'Not
+                            Selected') }}</span>
                     </div>
                     <div class="session-item">
                         <span class="session-label">📅 Date</span>
@@ -219,23 +220,103 @@
                 </div>
             </div>
 
-            <!-- Attendance Table Section -->
-            <div class="panel-section mt-4 slide-up delay-4">
+            <!-- Attendance Section - Two Column Layout -->
+            <div class="attendance-dual-layout mt-4 slide-up delay-4">
+                <!-- Present Students Column -->
+                <div class="panel-section present-panel">
+                    <div class="panel-header present-header">
+                        <h3>
+                            <span class="panel-header-icon">✅</span>
+                            Present Students
+                            <span class="attendance-count-badge present-badge" id="presentCountBadge">0</span>
+                        </h3>
+                        <div class="table-actions">
+                            <div class="search-box">
+                                <span class="search-icon">🔍</span>
+                                <input type="text" id="searchPresent" class="search-input" placeholder="Search...">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="table-container enhanced-table">
+                            <table class="attendance-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Roll No.</th>
+                                        <th>Time</th>
+                                        <th>Confidence</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="presentData">
+                                    <!-- Present students populated by JS -->
+                                </tbody>
+                            </table>
+                            <!-- Empty State -->
+                            <div class="empty-state" id="presentEmptyState">
+                                <div class="empty-icon">✅</div>
+                                <h4>No Present Students Yet</h4>
+                                <p>Start the session to mark attendance</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Absent Students Column -->
+                <div class="panel-section absent-panel">
+                    <div class="panel-header absent-header">
+                        <h3>
+                            <span class="panel-header-icon">❌</span>
+                            Absent Students
+                            <span class="attendance-count-badge absent-badge" id="absentCountBadge">0</span>
+                        </h3>
+                        <div class="table-actions">
+                            <div class="search-box">
+                                <span class="search-icon">🔍</span>
+                                <input type="text" id="searchAbsent" class="search-input" placeholder="Search...">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="table-container enhanced-table">
+                            <table class="attendance-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Roll No.</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="absentData">
+                                    <!-- Absent students populated by JS -->
+                                </tbody>
+                            </table>
+                            <!-- Empty State -->
+                            <div class="empty-state" id="absentEmptyState">
+                                <div class="empty-icon">🎉</div>
+                                <h4>No Absent Students</h4>
+                                <p>All students are present!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Actions -->
+            <div class="panel-section mt-4 slide-up delay-5">
                 <div class="panel-header">
                     <h3>
-                        <span class="panel-header-icon">📋</span>
-                        Today's Attendance
-                        <span class="attendance-count-badge" id="attendanceCountBadge">0 marked</span>
+                        <span class="panel-header-icon">📊</span>
+                        Actions
                     </h3>
-                    <div class="table-actions">
-                        <div class="search-box">
-                            <span class="search-icon">🔍</span>
-                            <input type="text" id="searchStudent" class="search-input" placeholder="Search student...">
-                        </div>
-                        <button class="btn btn-primary btn-sm" onclick="exportAttendance()">
+                </div>
+                <div class="panel-body">
+                    <div class="action-buttons-row">
+                        <button class="btn btn-primary" onclick="exportAttendance()">
                             <span class="btn-icon">📥</span>
                             Export CSV
                         </button>
+<<<<<<< HEAD
                     </div>
                 </div>
                 <div class="panel-body">
@@ -264,6 +345,16 @@
                             <h4>No Attendance Records Yet</h4>
                             <p>Start the attendance session to begin face recognition</p>
                         </div>
+=======
+                        <button class="btn btn-outline" onclick="simulateRecognition()">
+                            <span class="btn-icon">➕</span>
+                            Simulate Recognition
+                        </button>
+                        <button class="btn btn-success" onclick="markAllPresent()">
+                            <span class="btn-icon">✓</span>
+                            Mark All Present
+                        </button>
+>>>>>>> 8ba529b6f08edb4002d8b548d5d34cdcf82b268f
                     </div>
                 </div>
             </div>

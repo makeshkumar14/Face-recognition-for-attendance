@@ -31,9 +31,25 @@ def faculty_login():
         if faculty_id and password:
             session['user_type'] = 'faculty'
             session['user_id'] = faculty_id
-            return redirect(url_for('faculty_dashboard'))
+            return redirect(url_for('select_subject'))
         
     return render_template('faculty_login.html')
+
+
+@app.route('/select_subject', methods=['GET', 'POST'])
+def select_subject():
+    """Subject selection page - shown after faculty login"""
+    # Check if user is logged in
+    if session.get('user_type') != 'faculty':
+        return redirect(url_for('faculty_login'))
+    
+    if request.method == 'POST':
+        subject = request.form.get('subject')
+        if subject:
+            session['current_subject'] = subject
+            return redirect(url_for('faculty_dashboard'))
+    
+    return render_template('subject_select.html')
 
 
 @app.route('/student_login', methods=['GET', 'POST'])
