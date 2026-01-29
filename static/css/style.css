@@ -2606,3 +2606,59 @@ body.theme-light .stat-card {
 .btn-sm .btn-icon {
     font-size: 0.9rem;
 }
+
+/* ========================================
+   2-COLUMN DASHBOARD GRID (Control + Webcam)
+   ======================================== */
+.dashboard-grid-2col {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 24px;
+}
+
+@media (max-width: 1024px) {
+    .dashboard-grid-2col {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Expanded Webcam Panel */
+.webcam-panel-expanded {
+    min-height: 450px;
+}
+
+.webcam-container-large {
+    min-height: 380px;
+}
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--bg-glass);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all var(--transition-normal);
+}
+
+.theme-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary-color);
+    transform: rotate(15deg);
+}
+
+.theme-toggle-btn .theme-icon {
+    font-size: 1.25rem;
+}
+
+/* Session Info Grid - Updated for more items */
+.session-info-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: center;
+}

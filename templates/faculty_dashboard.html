@@ -43,6 +43,9 @@
                         <span class="user-role">Department of CSE</span>
                     </div>
                 </div>
+                <button class="btn btn-outline theme-toggle-btn" onclick="toggleTheme()">
+                    <span class="theme-icon">🌙</span>
+                </button>
                 <button class="btn btn-logout" onclick="logout()">
                     <span class="btn-icon">🚪</span>
                     Logout
@@ -59,6 +62,11 @@
                         <span class="session-label">📚 Subject</span>
                         <span class="session-value" id="sessionSubject">{{ session.get('current_subject', 'Not
                             Selected') }}</span>
+                    </div>
+                    <div class="session-item">
+                        <span class="session-label">🏛️ Dept-Sec</span>
+                        <span class="session-value" id="sessionDeptSec">{{ session.get('current_department', 'CSE') }} -
+                            {{ session.get('current_section', 'A') }}</span>
                     </div>
                     <div class="session-item">
                         <span class="session-label">📅 Date</span>
@@ -118,8 +126,8 @@
                 </div>
             </div>
 
-            <!-- Main Dashboard Grid -->
-            <div class="dashboard-grid-3col">
+            <!-- Main Dashboard Grid - 2 Column Layout (Control + Webcam) -->
+            <div class="dashboard-grid-2col">
                 <!-- Control Panel -->
                 <div class="panel-section slide-up delay-1">
                     <div class="panel-header">
@@ -156,8 +164,8 @@
                     </div>
                 </div>
 
-                <!-- Webcam Preview -->
-                <div class="panel-section slide-up delay-2 webcam-panel">
+                <!-- Webcam Preview - Expanded -->
+                <div class="panel-section slide-up delay-2 webcam-panel webcam-panel-expanded">
                     <div class="panel-header">
                         <h3>
                             <span class="panel-header-icon">📷</span>
@@ -168,7 +176,7 @@
                         </div>
                     </div>
                     <div class="panel-body">
-                        <div class="webcam-container" id="webcamContainer">
+                        <div class="webcam-container webcam-container-large" id="webcamContainer">
                             <!-- Live Badge -->
                             <div class="webcam-live-badge">
                                 <span class="live-dot"></span>
@@ -204,28 +212,6 @@
                             <div class="recognition-item fade-in">
                                 <span class="recognition-icon">👤</span>
                                 <span class="recognition-text">Waiting for face detection...</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Activity Logs -->
-                <div class="panel-section slide-up delay-3">
-                    <div class="panel-header">
-                        <h3>
-                            <span class="panel-header-icon">📝</span>
-                            Activity Logs
-                        </h3>
-                        <button class="btn btn-sm btn-outline" onclick="clearLogs()">
-                            Clear
-                        </button>
-                    </div>
-                    <div class="panel-body logs-panel">
-                        <div class="activity-logs" id="activityLogs">
-                            <div class="log-item info">
-                                <span class="log-time">--:--:--</span>
-                                <span class="log-icon">ℹ️</span>
-                                <span class="log-message">System ready. Waiting to start...</span>
                             </div>
                         </div>
                     </div>
