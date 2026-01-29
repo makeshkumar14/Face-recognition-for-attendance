@@ -317,86 +317,81 @@
                     </div>
                 </div>
 
-                <!-- Notifications Panel -->
-                <div class="panel-section slide-up delay-3">
-                    <div class="panel-header">
-                        <h3>
-                            <span class="panel-header-icon">🔔</span>
-                            Notifications
-                            <span class="notification-badge" id="notificationCount">3</span>
-                        </h3>
-                        <button class="btn btn-sm btn-outline" onclick="markAllRead()">Mark all read</button>
-                    </div>
-                    <div class="panel-body notifications-panel">
-                        <div class="notifications-list" id="notificationsList">
-                            <div class="notification-item unread success">
-                                <div class="notification-icon">✓</div>
-                                <div class="notification-content">
-                                    <h4>Attendance Marked</h4>
-                                    <p>Your attendance for AI class has been recorded successfully.</p>
-                                    <span class="notification-time">2 minutes ago</span>
+                <!-- Right Column: Notifications + Calendar -->
+                <div class="right-column-stack">
+                    <!-- Notifications Panel -->
+                    <div class="panel-section slide-up delay-3">
+                        <div class="panel-header">
+                            <h3>
+                                <span class="panel-header-icon">🔔</span>
+                                Notifications
+                                <span class="notification-badge" id="notificationCount">3</span>
+                            </h3>
+                            <button class="btn btn-sm btn-outline" onclick="markAllRead()">Mark all read</button>
+                        </div>
+                        <div class="panel-body notifications-panel" style="max-height: 200px;">
+                            <div class="notifications-list" id="notificationsList">
+                                <div class="notification-item unread success">
+                                    <div class="notification-icon">✓</div>
+                                    <div class="notification-content">
+                                        <h4>Attendance Marked</h4>
+                                        <p>Your attendance for AI class has been recorded successfully.</p>
+                                        <span class="notification-time">2 minutes ago</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="notification-item unread info">
-                                <div class="notification-icon">📢</div>
-                                <div class="notification-content">
-                                    <h4>Session Started</h4>
-                                    <p>Attendance session for Machine Learning has started.</p>
-                                    <span class="notification-time">10 minutes ago</span>
+                                <div class="notification-item unread info">
+                                    <div class="notification-icon">📢</div>
+                                    <div class="notification-content">
+                                        <h4>Session Started</h4>
+                                        <p>Attendance session for Machine Learning has started.</p>
+                                        <span class="notification-time">10 minutes ago</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="notification-item unread warning">
-                                <div class="notification-icon">⚠️</div>
-                                <div class="notification-content">
-                                    <h4>Low Attendance Alert</h4>
-                                    <p>Your attendance in Computer Networks is below 75%.</p>
-                                    <span class="notification-time">1 hour ago</span>
-                                </div>
-                            </div>
-                            <div class="notification-item read">
-                                <div class="notification-icon">ℹ️</div>
-                                <div class="notification-content">
-                                    <h4>Session Ended</h4>
-                                    <p>Database Systems attendance session has ended.</p>
-                                    <span class="notification-time">Yesterday</span>
+                                <div class="notification-item unread warning">
+                                    <div class="notification-icon">⚠️</div>
+                                    <div class="notification-content">
+                                        <h4>Low Attendance Alert</h4>
+                                        <p>Your attendance in Computer Networks is below 75%.</p>
+                                        <span class="notification-time">1 hour ago</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Monthly Calendar (Compact) -->
-            <div class="panel-section mt-4 slide-up delay-4 monthly-calendar-section">
-                <div class="panel-header">
-                    <h3>
-                        <span class="panel-header-icon">📅</span>
-                        <span id="calendarMonthYear">January 2026</span>
-                    </h3>
-                    <div class="calendar-nav">
-                        <button class="btn btn-sm btn-outline" onclick="changeMonth(-1)">‹</button>
-                        <button class="btn btn-sm btn-outline" onclick="changeMonth(1)">›</button>
-                    </div>
-                </div>
-                <div class="panel-body">
-                    <div class="mini-calendar" id="miniCalendar">
-                        <div class="calendar-weekdays">
-                            <span>Su</span>
-                            <span>Mo</span>
-                            <span>Tu</span>
-                            <span>We</span>
-                            <span>Th</span>
-                            <span>Fr</span>
-                            <span>Sa</span>
+                    <!-- Monthly Calendar (Compact) -->
+                    <div class="panel-section slide-up delay-4">
+                        <div class="panel-header">
+                            <h3>
+                                <span class="panel-header-icon">📅</span>
+                                <span id="calendarMonthYear">January 2026</span>
+                            </h3>
+                            <div class="calendar-nav">
+                                <button class="btn btn-sm btn-outline" onclick="changeMonth(-1)">‹</button>
+                                <button class="btn btn-sm btn-outline" onclick="changeMonth(1)">›</button>
+                            </div>
                         </div>
-                        <div class="calendar-days" id="calendarDays">
-                            <!-- Days populated by JS -->
+                        <div class="panel-body">
+                            <div class="mini-calendar" id="miniCalendar">
+                                <div class="calendar-weekdays">
+                                    <span>Su</span>
+                                    <span>Mo</span>
+                                    <span>Tu</span>
+                                    <span>We</span>
+                                    <span>Th</span>
+                                    <span>Fr</span>
+                                    <span>Sa</span>
+                                </div>
+                                <div class="calendar-days" id="calendarDays">
+                                    <!-- Days populated by JS -->
+                                </div>
+                            </div>
+                            <div class="calendar-legend">
+                                <span class="legend-item"><span class="legend-dot present"></span> Present</span>
+                                <span class="legend-item"><span class="legend-dot absent"></span> Absent</span>
+                                <span class="legend-item"><span class="legend-dot today"></span> Today</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="calendar-legend">
-                        <span class="legend-item"><span class="legend-dot present"></span> Present</span>
-                        <span class="legend-item"><span class="legend-dot absent"></span> Absent</span>
-                        <span class="legend-item"><span class="legend-dot today"></span> Today</span>
                     </div>
                 </div>
             </div>

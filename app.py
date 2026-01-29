@@ -47,9 +47,31 @@ def select_subject():
         subject = request.form.get('subject')
         if subject:
             session['current_subject'] = subject
-            return redirect(url_for('faculty_dashboard'))
+            return redirect(url_for('select_class'))
     
     return render_template('subject_select.html')
+
+
+@app.route('/select_class', methods=['GET', 'POST'])
+def select_class():
+    """Class (Department + Section) selection page"""
+    # Check if user is logged in
+    if session.get('user_type') != 'faculty':
+        return redirect(url_for('faculty_login'))
+    
+    # Check if subject is selected
+    if not session.get('current_subject'):
+        return redirect(url_for('select_subject'))
+    
+    if request.method == 'POST':
+        department = request.form.get('department')
+        section = request.form.get('section')
+        if department and section:
+            session['current_department'] = department
+            session['current_section'] = section
+            return redirect(url_for('faculty_dashboard'))
+    
+    return render_template('class_select.html')
 
 
 @app.route('/student_login', methods=['GET', 'POST'])
