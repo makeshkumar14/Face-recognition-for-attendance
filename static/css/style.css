@@ -2286,54 +2286,60 @@ body.theme-light .stat-card {
    MONTHLY CALENDAR - Attendance Overview
    ======================================== */
 .monthly-calendar-section {
-    width: 100%;
+    max-width: 50%;
+}
+
+@media (max-width: 1024px) {
+    .monthly-calendar-section {
+        max-width: 100%;
+    }
 }
 
 .calendar-nav {
     display: flex;
-    gap: 6px;
+    gap: 4px;
 }
 
 .calendar-nav .btn {
-    padding: 6px 12px;
-    font-size: 1rem;
+    padding: 4px 8px;
+    font-size: 0.8rem;
 }
 
 .mini-calendar {
     background: var(--bg-glass);
     border-radius: var(--radius-md);
-    padding: 20px;
+    padding: 12px;
 }
 
 .calendar-weekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
-    margin-bottom: 12px;
+    gap: 4px;
+    margin-bottom: 8px;
     text-align: center;
 }
 
 .calendar-weekdays span {
-    font-size: 0.85rem;
+    font-size: 0.7rem;
     color: var(--text-muted);
     text-transform: uppercase;
     font-weight: 600;
-    padding: 8px 0;
+    padding: 4px 0;
 }
 
 .calendar-days {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
+    gap: 4px;
 }
 
 .calendar-day {
-    height: 42px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.9rem;
-    border-radius: 8px;
+    font-size: 0.75rem;
+    border-radius: 6px;
     cursor: default;
     transition: all var(--transition-fast);
     position: relative;
@@ -2409,4 +2415,137 @@ body.theme-light .stat-card {
 
 .legend-dot.today {
     background: var(--primary-gradient);
+}
+
+/* ========================================
+   ATTENDANCE DUAL LAYOUT - Present/Absent Columns
+   ======================================== */
+.attendance-dual-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+@media (max-width: 1024px) {
+    .attendance-dual-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.present-panel {
+    order: 1;
+}
+
+.absent-panel {
+    order: 2;
+}
+
+.present-header {
+    background: linear-gradient(90deg, rgba(72, 187, 120, 0.1) 0%, transparent 100%);
+}
+
+.absent-header {
+    background: linear-gradient(90deg, rgba(252, 129, 129, 0.1) 0%, transparent 100%);
+}
+
+.present-badge {
+    background: rgba(72, 187, 120, 0.2);
+    color: var(--accent-success);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-left: 12px;
+}
+
+.absent-badge {
+    background: rgba(252, 129, 129, 0.2);
+    color: var(--accent-danger);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-left: 12px;
+}
+
+/* Mark Present Button in Absent Table */
+.btn-mark-present {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-mark-present:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
+}
+
+/* ========================================
+   EXPANDED ACTION BUTTONS
+   ======================================== */
+.action-buttons-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+@media (max-width: 768px) {
+    .action-buttons-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.action-buttons-row .btn {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    min-height: 50px;
+    border-radius: 12px;
+}
+
+.action-buttons-row .btn .btn-icon {
+    font-size: 1.1rem;
+}
+
+.action-buttons-row .btn-primary {
+    background: linear-gradient(135deg, #00d4ff 0%, #7b68ee 100%);
+}
+
+.action-buttons-row .btn-outline {
+    background: var(--bg-glass);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.action-buttons-row .btn-outline:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary-color);
+}
+
+.action-buttons-row .btn-success {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+}
+
+/* Small Button Variant */
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    gap: 4px;
+}
+
+.btn-sm .btn-icon {
+    font-size: 0.9rem;
 }
