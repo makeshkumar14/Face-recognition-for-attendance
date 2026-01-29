@@ -255,6 +255,11 @@ h4 {
     box-shadow: 0 6px 25px rgba(252, 129, 129, 0.5);
 }
 
+/* Remove shine effect from danger buttons */
+.btn-danger::before {
+    display: none;
+}
+
 .btn-outline {
     background: transparent;
     border: 2px solid var(--primary-color);
@@ -527,22 +532,75 @@ h4 {
 }
 
 .dashboard-header {
-    background: var(--bg-secondary);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 16px 32px;
+    background: rgba(26, 26, 46, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 50px;
+    padding: 12px 28px;
+    margin: 16px 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     position: sticky;
-    top: 0;
+    top: 16px;
     z-index: 100;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
 }
 
 .header-left {
     display: flex;
     align-items: center;
     gap: 16px;
+}
+
+/* Brand styling */
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-logo-icon {
+    font-size: 1.5rem;
+    background: linear-gradient(135deg, #a855f7, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.header-brand-text {
+    font-size: 1.25rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #a855f7, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Center navigation */
+.header-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.header-nav {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.nav-item {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color var(--transition-fast);
+}
+
+.nav-item:hover,
+.nav-item.active {
+    color: var(--text-primary);
 }
 
 .header-logo {
