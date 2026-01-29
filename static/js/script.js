@@ -396,7 +396,7 @@ function loadAttendanceData() {
 
   if (!presentBody && !absentBody) return;
 
-  // Sample student data - all students in the class
+  // Sample student data - all students in the class (15+ names)
   const allStudents = [
     { id: "CSE001", name: "Rahul Kumar" },
     { id: "CSE002", name: "Priya Sharma" },
@@ -408,14 +408,23 @@ function loadAttendanceData() {
     { id: "CSE008", name: "Kavya Nair" },
     { id: "CSE009", name: "Siddharth Joshi" },
     { id: "CSE010", name: "Divya Krishnan" },
+    { id: "CSE011", name: "Arjun Verma" },
+    { id: "CSE012", name: "Neha Gupta" },
+    { id: "CSE013", name: "Mohammed Ali" },
+    { id: "CSE014", name: "Pooja Reddy" },
+    { id: "CSE015", name: "Karthik Sundaram" },
   ];
 
-  // Initial present students (demo data)
+  // Initial present students (mixed demo data - 8 present, 7 absent)
   const presentStudents = [
     { id: "CSE001", name: "Rahul Kumar", time: "09:15 AM", confidence: 98.5 },
-    { id: "CSE002", name: "Priya Sharma", time: "09:18 AM", confidence: 97.2 },
-    { id: "CSE003", name: "Amit Singh", time: "09:22 AM", confidence: 99.1 },
-    { id: "CSE005", name: "Vikram Reddy", time: "09:30 AM", confidence: 96.8 },
+    { id: "CSE003", name: "Amit Singh", time: "09:18 AM", confidence: 97.2 },
+    { id: "CSE005", name: "Vikram Reddy", time: "09:22 AM", confidence: 99.1 },
+    { id: "CSE006", name: "Ananya Iyer", time: "09:25 AM", confidence: 96.8 },
+    { id: "CSE008", name: "Kavya Nair", time: "09:28 AM", confidence: 98.2 },
+    { id: "CSE010", name: "Divya Krishnan", time: "09:31 AM", confidence: 97.5 },
+    { id: "CSE012", name: "Neha Gupta", time: "09:35 AM", confidence: 99.3 },
+    { id: "CSE015", name: "Karthik Sundaram", time: "09:40 AM", confidence: 96.1 },
   ];
 
   // Absent students are those not in presentStudents
