@@ -71,7 +71,7 @@ def select_class():
             session['current_section'] = section
             return redirect(url_for('faculty_dashboard'))
     
-    return render_template('class_select.html')
+    return render_template('section_select.html')
 
 
 @app.route('/student_login', methods=['GET', 'POST'])
