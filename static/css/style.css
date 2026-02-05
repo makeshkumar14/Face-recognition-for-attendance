@@ -1320,8 +1320,8 @@ body.theme-light .stat-card {
 
 .session-info-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 48px;
 }
 
 @media (max-width: 768px) {
@@ -1674,7 +1674,7 @@ body.theme-light .stat-card {
 /* Enhanced Table Styles */
 .enhanced-table {
     margin-top: 0;
-    max-height: 400px;
+    max-height: 800px;
     overflow-y: auto;
 }
 
@@ -2659,6 +2659,6 @@ body.theme-light .stat-card {
 .session-info-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 24px;
-    justify-content: center;
+    gap: 48px;
+    justify-content: space-around;
 }
