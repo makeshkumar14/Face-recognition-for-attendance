@@ -183,39 +183,86 @@ function startAttendance() {
   startBtn.disabled = true;
   startBtn.innerHTML = '<span class="btn-icon">⏳</span> Starting...';
 
-  // Simulate API call
-  setTimeout(() => {
-    isAttendanceRunning = true;
+  // Call backend API to start attendance session
+  fetch("/api/start_attendance", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      subject: document.getElementById('sessionSubject')?.textContent || 'General',
+      section: 'A',
+      period: '1'
+    })
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success || data.message) {
+        isAttendanceRunning = true;
 
-    // Update status indicator
-    updateStatusIndicator(true);
+        // Update status indicator
+        updateStatusIndicator(true);
 
-    // Update session status badge
-    updateSessionBadge(true);
+        // Update session status badge
+        updateSessionBadge(true);
 
-    // Update camera status
-    updateCameraStatus(true);
+        // Update camera status
+        updateCameraStatus(true);
 
-    // Update button states
-    startBtn.disabled = true;
-    startBtn.innerHTML = '<span class="btn-icon">▶️</span> Start Attendance';
-    stopBtn.disabled = false;
-    if (resetBtn) resetBtn.disabled = true;
+        // Update button states
+        startBtn.disabled = true;
+        startBtn.innerHTML = '<span class="btn-icon">▶️</span> Start Attendance';
+        stopBtn.disabled = false;
+        if (resetBtn) resetBtn.disabled = true;
 
-    // Activate webcam container
-    const webcamContainer = document.querySelector(".webcam-container");
-    if (webcamContainer) {
-      webcamContainer.classList.add("active");
+        // Activate webcam container
+        const webcamContainer = document.querySelector(".webcam-container");
+        if (webcamContainer) {
+          webcamContainer.classList.add("active");
+        }
+
+        // Hide placeholder and show camera feed
+        const placeholder = document.querySelector(".webcam-placeholder");
+        const webcamFeed = document.getElementById("webcamFeed");
+        
+        if (placeholder) placeholder.style.display = "none";
+        if (webcamFeed) {
+          webcamFeed.src = "/video_feed";
+          webcamFeed.style.display = "block";
+        }
+
+        // Add log entry
+        addLogEntry("Attendance session started - Camera active", "success");
+
+        showNotification("Attendance started successfully!", "success");
+
+        // Start polling for recognized faces
+        startRecognitionPolling();
+      } else {
+        throw new Error(data.error || "Failed to start attendance");
+      }
+    })
+    .catch((error) => {
+      console.error("Error starting attendance:", error);
+      startBtn.disabled = false;
+      startBtn.innerHTML = '<span class="btn-icon">▶️</span> Start Attendance';
+      showNotification("Failed to start attendance: " + error.message, "error");
+    });
+}
+
+// Poll for recognized faces from backend
+let recognitionPollingInterval = null;
+
+function startRecognitionPolling() {
+  if (recognitionPollingInterval) clearInterval(recognitionPollingInterval);
+  
+  recognitionPollingInterval = setInterval(() => {
+    if (!isAttendanceRunning) {
+      clearInterval(recognitionPollingInterval);
+      return;
     }
-
-    // Add log entry
-    addLogEntry("Attendance session started", "success");
-
-    showNotification("Attendance started successfully!", "success");
-
-    // Start face detection simulation
-    startFaceDetectionSimulation();
-  }, 1000);
+    
+    // Fetch current attendance data
+    loadAttendanceData();
+  }, 2000); // Poll every 2 seconds
 }
 
 function stopAttendance() {
@@ -226,35 +273,66 @@ function stopAttendance() {
   stopBtn.disabled = true;
   stopBtn.innerHTML = '<span class="btn-icon">⏳</span> Stopping...';
 
-  setTimeout(() => {
-    isAttendanceRunning = false;
+  // Stop polling
+  if (recognitionPollingInterval) {
+    clearInterval(recognitionPollingInterval);
+    recognitionPollingInterval = null;
+  }
 
-    // Update status indicator
-    updateStatusIndicator(false);
+  // Call backend API to stop attendance
+  fetch("/api/stop_attendance", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      isAttendanceRunning = false;
 
-    // Update session status badge
-    updateSessionBadge(false);
+      // Update status indicator
+      updateStatusIndicator(false);
 
-    // Update camera status
-    updateCameraStatus(false);
+      // Update session status badge
+      updateSessionBadge(false);
 
-    // Update button states
-    stopBtn.disabled = true;
-    stopBtn.innerHTML = '<span class="btn-icon">⏹️</span> Stop Attendance';
-    startBtn.disabled = false;
-    if (resetBtn) resetBtn.disabled = false;
+      // Update camera status
+      updateCameraStatus(false);
 
-    // Deactivate webcam container
-    const webcamContainer = document.querySelector(".webcam-container");
-    if (webcamContainer) {
-      webcamContainer.classList.remove("active");
-    }
+      // Update button states
+      stopBtn.disabled = true;
+      stopBtn.innerHTML = '<span class="btn-icon">⏹️</span> Stop Attendance';
+      startBtn.disabled = false;
+      if (resetBtn) resetBtn.disabled = false;
 
-    // Add log entry
-    addLogEntry("Attendance session stopped", "info");
+      // Deactivate webcam container
+      const webcamContainer = document.querySelector(".webcam-container");
+      if (webcamContainer) {
+        webcamContainer.classList.remove("active");
+      }
 
-    showNotification("Attendance stopped successfully!", "info");
-  }, 1000);
+      // Hide camera feed and show placeholder
+      const placeholder = document.querySelector(".webcam-placeholder");
+      const webcamFeed = document.getElementById("webcamFeed");
+      
+      if (webcamFeed) {
+        webcamFeed.src = "";
+        webcamFeed.style.display = "none";
+      }
+      if (placeholder) placeholder.style.display = "flex";
+
+      // Add log entry
+      addLogEntry("Attendance session stopped - Camera deactivated", "info");
+
+      showNotification("Attendance stopped successfully!", "info");
+    })
+    .catch((error) => {
+      console.error("Error stopping attendance:", error);
+      // Still update UI even if API fails
+      isAttendanceRunning = false;
+      stopBtn.disabled = true;
+      stopBtn.innerHTML = '<span class="btn-icon">⏹️</span> Stop Attendance';
+      startBtn.disabled = false;
+      showNotification("Attendance stopped", "info");
+    });
 }
 
 function resetSession() {
